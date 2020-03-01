@@ -1,6 +1,6 @@
 # Docker Compose for Devs #
 
-Docker compose with common services used by Devs on local environment  
+Docker compose file with common services used by Devs on local environment  
 
 ### Services ###
 
@@ -9,8 +9,8 @@ Docker compose with common services used by Devs on local environment
 * RabbitMQ;
 * ActiveMQ;
 * DynamoDB:
-* Elastic Search: 30 days trial licence;
-* Kibana: 30 days trial licence;
+* Elastic Search: *30 days trial licence*;
+* Kibana: *30 days trial licence*;
 
 ### Prerequisite ###
 
@@ -22,16 +22,17 @@ https://docs.docker.com/compose/install/
 
 ### Accessing using Browser ###
 
-- Postgres JDBC (using exposed postgres container port: 15432):
-`jdbc:postgresql://localhost:15432/postgres`
+- Postgres JDBC (using exposed postgres container port: *15432*):
 
-- PG Admin (login: admin| password: admin | Using external container port: 15433): http://localhost:15433
+```jdbc:postgresql://localhost:15432/postgres```
 
-- RabbitMQ (login: guest| password: guest): http://localhost:15672
+- PG Admin (login: *admin*| password: *admin* | Using external container port: *15433*): http://localhost:15433
 
-- ActiveMQ (login: admin| password: admin): http://localhost:8161/admin/
+- RabbitMQ (login: *guest*| password: *guest*): http://localhost:15672
 
-- DinamoDB (no credentials required): http://localhost:4569/
+- ActiveMQ (login: *admin*| password: *admin*): http://localhost:8161/admin/
+
+- DinamoDB (*no credentials required*): http://localhost:4569/
 
 *Important: Connection with postgres running in docker use postgres container name `postgres` as host name and internal container port `5432`:*
 
@@ -40,7 +41,7 @@ Host name/address: postgres
 Port: 5432
 Maintenance database: postgres 
 Username: admin
-password: admin
+Password: admin
 ```
 
 ### Postgres and PG Admin ###
@@ -56,22 +57,22 @@ https://medium.com/@renato.groffe/postgresql-docker-executando-uma-inst%C3%A2nci
 On terminal, go to `docker-compose-for-devs` folder and run the commands bellow: 
  
 
-* Installing all images and starting containers:
+* Installing *all images* and starting containers:
 ```
 docker-compose up -d
 ```
 
-* Starting containers with existing data:
+* Starting containers *with existing data*:
 ```
 docker-compose start
 ```
 
-* Stopping containers keeping current data:
+* Stopping containers *keeping current data*:
 ```
 docker-compose stop
 ```
  
-* Stopping and removing containers (all data will be lost):
+* Stopping and removing containers (*all data will be lost*):
 ```
 docker-compose down
 ```
