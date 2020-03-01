@@ -1,0 +1,86 @@
+version: "3.7"
+
+services:
+
+   postgres:
+     container_name: postgres
+     image: postgres
+     restart: unless-stopped
+     environment:
+       - POSTGRES_USER=admin
+       - POSTGRES_PASSWORD=admin
+       - POSTGRES_DB=postgres
+     ports:
+       - "15432:5432"
+     networks:
+       - postgres-network
+
+   pgadmin:
+     container_name: pgadmin
+     image: dpage/pgadmin4
+     restart: unless-stopped
+     environment:
+       - PGADMIN_DEFAULT_EMAIL=admin
+       - PGADMIN_DEFAULT_PASSWORD=admin
+     ports:
+       - "15433:80"
+     networks:
+       - postgres-network
+     depends_on:
+       - postgres
+
+   rabbitmq:
+     container_name: rabbitmq
+     image: rabbitmq:3-management
+     ports:
+       - 15672:15672
+       - 5672:5672
+
+   activemq:
+     container_name: activemq
+     image: webcenter/activemq
+     ports:
+       - 8161:8161
+       - 61616:61616
+       - 61613:61613
+
+   dynamodb:
+     container_name: dynamodb
+     image: instructure/dynamo-local-admin
+     ports:
+       - 4569:8000
+
+
+
+
+### 30 days trial licence
+#   elasticsearch:
+#     container_name: elasticsearch
+#     image: elasticsearch:latest
+#     ports:
+#       - 9200:9200
+#       - 9300:9300
+#     networks:
+#       - elk-network
+#     ulimits:
+#       memlock:
+#         soft: -1
+#         hard: -1
+#
+#      kibana:
+#        container_name: kibana
+#        image: docker.elastic.co/kibana/kibana:7.4.2
+#        ports:
+#          - 5601:5601
+#        environment:
+#          - ELASTICSEARCH_URL=http://elasticsearch:9200
+#        networks:
+#          - elk-network
+#        depends_on:
+#          - elasticsearch
+
+networks:
+  postgres-network:
+    driver: bridge
+  elk-network:
+    driver: bridge
