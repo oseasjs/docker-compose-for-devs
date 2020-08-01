@@ -1,86 +1,92 @@
+# TO RUN
+# `TMPDIR=/private SERVICES=sns,sqs docker-compose up -d`
+
 version: "3.7"
 
 services:
 
-   postgres:
-     container_name: postgres
-     image: postgres
-     restart: unless-stopped
-     environment:
-       - POSTGRES_USER=admin
-       - POSTGRES_PASSWORD=admin
-       - POSTGRES_DB=postgres
-     ports:
-       - "15432:5432"
-     networks:
-       - postgres-network
+  postgres:
+    container_name: postgres
+    hostname: postgres
+    image: postgres
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_DB=postgres
+    ports:
+      - "15432:5432"
+    networks:
+      - postgres-network
 
-   pgadmin:
-     container_name: pgadmin
-     image: dpage/pgadmin4
-     restart: unless-stopped
-     environment:
-       - PGADMIN_DEFAULT_EMAIL=admin
-       - PGADMIN_DEFAULT_PASSWORD=admin
-     ports:
-       - "15433:80"
-     networks:
-       - postgres-network
-     depends_on:
-       - postgres
+  pgadmin:
+    container_name: pgadmin
+    hostname: pgadmin
+    image: dpage/pgadmin4
+    restart: unless-stopped
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin
+      - PGADMIN_DEFAULT_PASSWORD=admin
+    ports:
+      - "15433:80"
+    networks:
+      - postgres-network
+    depends_on:
+      - postgres
 
-   rabbitmq:
-     container_name: rabbitmq
-     image: rabbitmq:3-management
-     ports:
-       - 15672:15672
-       - 5672:5672
+  rabbitmq:
+    container_name: rabbitmq
+    image: bitnami/rabbitmq
+    ports:
+      - 15672:15672
+      - 5672:5672
 
-   activemq:
-     container_name: activemq
-     image: webcenter/activemq
-     ports:
-       - 8161:8161
-       - 61616:61616
-       - 61613:61613
+  activemq:
+    container_name: activemq
+    image: webcenter/activemq
+    ports:
+      - 8161:8161
+      - 61616:61616
+      - 61613:61613
 
-   dynamodb:
-     container_name: dynamodb
-     image: instructure/dynamo-local-admin
-     ports:
-       - 4569:8000
+  redis:
+    container_name: redis
+    hostname: redis
+    image: redis:alpine
+    ports:
+      - "6379:6379"
 
+  redis-commander:
+    container_name: redis-commander
+    hostname: redis-commander
+    image: rediscommander/redis-commander
+    restart: always
+    environment:
+      - REDIS_HOSTS=local:redis:6379
+    ports:
+      - "6380:8081"
+    depends_on:
+      - redis
 
-
-
-### 30 days trial licence
-#   elasticsearch:
-#     container_name: elasticsearch
-#     image: elasticsearch:latest
-#     ports:
-#       - 9200:9200
-#       - 9300:9300
-#     networks:
-#       - elk-network
-#     ulimits:
-#       memlock:
-#         soft: -1
-#         hard: -1
-#
-#      kibana:
-#        container_name: kibana
-#        image: docker.elastic.co/kibana/kibana:7.4.2
-#        ports:
-#          - 5601:5601
-#        environment:
-#          - ELASTICSEARCH_URL=http://elasticsearch:9200
-#        networks:
-#          - elk-network
-#        depends_on:
-#          - elasticsearch
+  # About Localstack: https://github.com/localstack/localstack
+  localstack:
+    container_name: "${LOCALSTACK_DOCKER_NAME-localstack_main}"
+    image: localstack/localstack
+    ports:
+      - "4567-4599:4567-4599"
+      - "${PORT_WEB_UI-18082}:${PORT_WEB_UI-18082}"
+    environment:
+      - SERVICES=${SERVICES}
+      - DEBUG=1
+      - DATA_DIR=/tmp/localstack/data
+      - PORT_WEB_UI=18082
+      - LAMBDA_EXECUTOR=${LAMBDA_EXECUTOR- }
+      - KINESIS_ERROR_PROBABILITY=${KINESIS_ERROR_PROBABILITY- }
+      - DOCKER_HOST=unix:///var/run/docker.sock
+    volumes:
+      - "${TMPDIR:-/tmp/localstack}:/tmp/localstack"
+      - "/var/run/docker.sock:/var/run/docker.sock"
 
 networks:
   postgres-network:
-    driver: bridge
-  elk-network:
     driver: bridge
